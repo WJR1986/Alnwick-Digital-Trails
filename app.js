@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentTrailData = null;
     let map = null;
     let html5QrcodeScanner = null;
+    let secretScanner = null;
     
     // Modals
     const unlockModal = new bootstrap.Modal(document.getElementById('unlock-modal'));
@@ -21,6 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const scanQrButton = document.getElementById('scan-qr-button');
     const trailCodeInput = document.getElementById('trail-code-input');
     const qrReaderContainer = document.getElementById('qr-reader-container');
+    const scanSecretButton = document.getElementById('scan-secret-button');
+    const closeSecretScannerButton = document.getElementById('close-secret-scanner-button');
+    const secretQrReaderContainer = document.getElementById('secret-qr-reader-container');
+    let isSecretScannerActive = false;
+
 
     // --- INITIALIZATION ---
     const init = async () => {
@@ -74,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('trail-title').textContent = data.trail.name;
         homeView.classList.add('d-none');
         liveTrailView.classList.remove('d-none');
+        scanSecretButton.classList.remove('d-none'); // Show the secret scanner button
         initializeMap(data);
     };
 
@@ -141,9 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const popupContent = `<b>${stopNumber}. ${location.name}</b><br>${location.description}`;
             marker.bindPopup(popupContent);
         });
-        
-        // Start a separate scanner for in-trail secrets
-        startSecretScanner();
     };
     
     // --- QR SCANNER LOGIC ---
@@ -174,13 +178,34 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const startSecretScanner = () => {
-        // This is a conceptual function. In a real app, you might overlay a scan button on the map
-        // or re-use the main scanner. For simplicity, we'll just listen for any QR code.
-        // A more robust solution would be a dedicated "Scan Secret" button on the map view.
-        
-        // For now, we can imagine a scenario where the user has to go back to a scanner page
-        // or we can implement a simple global scanner. The logic below is a placeholder.
-        console.log("Secret scanner ready. In a real app, provide a UI button to trigger this.");
+        if (isSecretScannerActive) return;
+        isSecretScannerActive = true;
+
+        secretQrReaderContainer.classList.remove('d-none');
+        scanSecretButton.classList.add('d-none'); // Hide the button when scanner is open
+
+        secretScanner = new Html5QrcodeScanner("secret-qr-reader", { fps: 10, qrbox: {width: 250, height: 250} });
+        secretScanner.render((decodedText, decodedResult) => {
+            // On success, reveal the secret and stop the scanner
+            revealSecret(decodedText);
+            stopSecretScanner();
+        }, (errorMessage) => {
+            // handle errors, or ignore them.
+        });
+    };
+
+    const stopSecretScanner = () => {
+        if (!isSecretScannerActive) return;
+
+        if (secretScanner) {
+            secretScanner.clear().catch(error => {
+                console.error("Failed to clear the secret QR scanner.", error);
+            });
+            secretScanner = null;
+        }
+        secretQrReaderContainer.classList.add('d-none');
+        scanSecretButton.classList.remove('d-none'); // Show the button again
+        isSecretScannerActive = false;
     };
 
 
@@ -197,6 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
             startUnlockScanner();
         }
     });
+
+    scanSecretButton.addEventListener('click', startSecretScanner);
+    closeSecretScannerButton.addEventListener('click', stopSecretScanner);
     
     // When the unlock modal is closed, stop the scanner
     document.getElementById('unlock-modal').addEventListener('hidden.bs.modal', stopUnlockScanner);

@@ -25,3 +25,20 @@ body {
     padding: 10px;
     background-color: #f8f9fa;
 }
+
+#scan-secret-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000; /* Ensures it's on top of the Leaflet map */
+}
+
+#secret-qr-reader-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    padding: 15px;
+    z-index: 1001; /* Sits on top of the scan button and map */
+}
