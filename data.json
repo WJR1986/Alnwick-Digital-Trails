@@ -1,0 +1,31 @@
+{
+  "trails": [
+    {
+      "name": "The Historic Town & Hidden Gems Trail",
+      "theme": "Secrets of the Town",
+      "description": "A shorter, intimate tour focusing on the architectural charm...",
+      "duration_text": "2 hours",
+      "distance_text": "~1 mile / 1.6 km",
+      "locations": [
+        {
+          "name": "The White Swan Hotel",
+          "category": "Hidden Gem",
+          "description": "This old coaching inn hides an incredible secret...",
+          "qr_secret_story": "The 'Olympic Suite' is decorated with original fittings...",
+          "latitude": 55.4138,
+          "longitude": -1.7042,
+          "secret_code": "secret-white-swan"
+        },
+        {
+          "name": "Bondgate Tower",
+          "category": "Hidden Gem",
+          "description": "An impressive medieval gate built to protect Alnwick...",
+          "qr_secret_story": "The big stone lion emblem above the arch is the Percy Lion...",
+          "latitude": 55.4140,
+          "longitude": -1.7020,
+          "secret_code": "secret-bondgate"
+        }
+      ]
+    }
+  ]
+}
