@@ -5,11 +5,66 @@ document.addEventListener('DOMContentLoaded', () => {
     const passwordInput = document.getElementById('password-input');
     const loginError = document.getElementById('login-error');
     const logoutButton = document.getElementById('logout-button');
+    const trailListContainer = document.getElementById('trail-list-container');
+
+    // --- Supabase Initialization ---
+    // IMPORTANT: Replace with your actual Supabase URL and Anon Key
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 
     // --- Core Functions ---
+    const loadTrails = async () => {
+        trailListContainer.innerHTML = `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
+
+        const { data: trails, error } = await supabase
+            .from('trails')
+            .select('*')
+            .order('id', { ascending: true });
+
+        if (error) {
+            console.error('Error fetching trails:', error);
+            trailListContainer.innerHTML = `<div class="alert alert-danger">Error fetching trails. Check the console for details.</div>`;
+            return;
+        }
+
+        trailListContainer.innerHTML = ''; // Clear spinner
+
+        if (trails.length === 0) {
+            trailListContainer.innerHTML = `<p>No trails found. You can add one now!</p>`;
+            return;
+        }
+        
+        const trailCards = trails.map(trail => `
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title mb-1">${trail.name}</h5>
+                            <p class="card-subtitle text-muted">${trail.theme}</p>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-secondary me-2" disabled>
+                                <i class="bi bi-pencil-fill"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-primary" disabled>
+                                <i class="bi bi-geo-alt-fill"></i> Manage Locations
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        trailListContainer.innerHTML = trailCards;
+    };
+
+
     const showAdminView = () => {
         loginView.classList.add('d-none');
         adminView.classList.remove('d-none');
+        loadTrails(); // Fetch and display trails as soon as the view is shown
     };
 
     const showLoginView = () => {
@@ -30,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 const data = await response.json();
-                // Store the token to keep the user logged in for the session
                 sessionStorage.setItem('admin-token', data.token);
                 showAdminView();
             } else {
@@ -50,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- Initial Check ---
-    // When the page loads, check if the user is already logged in (has a token)
     if (sessionStorage.getItem('admin-token') === 'admin-access-granted') {
         showAdminView();
     } else {
