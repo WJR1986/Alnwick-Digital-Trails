@@ -1,5 +1,21 @@
 // app.js
 
+// --- SERVICE WORKER REGISTRATION ---
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('Service worker registered.', reg))
+            .catch(err => console.error('Service worker registration failed.', err));
+    });
+}
+
+// This function will be called by the new "End Trail" button
+function endTrail() {
+    localStorage.removeItem('unlockedTrail');
+    location.reload();
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- STATE MANAGEMENT ---
     let allTrails = [];
@@ -25,11 +41,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const scanSecretButton = document.getElementById('scan-secret-button');
     const closeSecretScannerButton = document.getElementById('close-secret-scanner-button');
     const secretQrReaderContainer = document.getElementById('secret-qr-reader-container');
+    const endTrailButton = document.getElementById('end-trail-button'); // New button
     let isSecretScannerActive = false;
 
 
     // --- INITIALIZATION ---
     const init = async () => {
+        // CHECK FOR A CACHED TRAIL FIRST
+        const cachedTrail = localStorage.getItem('unlockedTrail');
+        if (cachedTrail) {
+            console.log("Found a cached trail, loading it from localStorage.");
+            const trailData = JSON.parse(cachedTrail);
+            showLiveTrailView(trailData);
+            return; // Stop the init function here to prevent fetching public trails
+        }
+
+        // If no cached trail, proceed to fetch public trails
         try {
             const response = await fetch('/.netlify/functions/get-trails');
             if (!response.ok) throw new Error('Failed to fetch trails');
@@ -80,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('trail-title').textContent = data.trail.name;
         homeView.classList.add('d-none');
         liveTrailView.classList.remove('d-none');
-        scanSecretButton.classList.remove('d-none'); // Show the secret scanner button
+        scanSecretButton.classList.remove('d-none');
         initializeMap(data);
     };
 
@@ -102,6 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (result.success) {
+                // SAVE THE UNLOCKED TRAIL TO LOCALSTORAGE
+                localStorage.setItem('unlockedTrail', JSON.stringify(result));
+
                 unlockModal.hide();
                 showLiveTrailView(result);
             } else {
@@ -124,7 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('secret-story-content').textContent = location.qr_secret_story;
             secretModal.show();
         } else {
-            // This might happen if a QR code from a different trail is scanned
             alert('Secret not found for your current trail.');
         }
     };
@@ -132,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- MAP LOGIC ---
     const initializeMap = (data) => {
         if (map) {
-            map.remove(); // Remove previous map instance if it exists
+            map.remove();
         }
         const startLocation = data.locations[0];
         map = L.map('map').setView([startLocation.latitude, startLocation.longitude], 16);
@@ -157,13 +186,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: {width: 250, height: 250} });
         html5QrcodeScanner.render((decodedText, decodedResult) => {
-            // on success
             trailCodeInput.value = decodedText;
             stopUnlockScanner();
             verifyTrailCode(decodedText);
-        }, (errorMessage) => {
-            // on error
-        });
+        }, (errorMessage) => {});
     };
 
     const stopUnlockScanner = () => {
@@ -182,21 +208,17 @@ document.addEventListener('DOMContentLoaded', () => {
         isSecretScannerActive = true;
 
         secretQrReaderContainer.classList.remove('d-none');
-        scanSecretButton.classList.add('d-none'); // Hide the button when scanner is open
+        scanSecretButton.classList.add('d-none');
 
         secretScanner = new Html5QrcodeScanner("secret-qr-reader", { fps: 10, qrbox: {width: 250, height: 250} });
         secretScanner.render((decodedText, decodedResult) => {
-            // On success, reveal the secret and stop the scanner
             revealSecret(decodedText);
             stopSecretScanner();
-        }, (errorMessage) => {
-            // handle errors, or ignore them.
-        });
+        }, (errorMessage) => {});
     };
 
     const stopSecretScanner = () => {
         if (!isSecretScannerActive) return;
-
         if (secretScanner) {
             secretScanner.clear().catch(error => {
                 console.error("Failed to clear the secret QR scanner.", error);
@@ -204,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             secretScanner = null;
         }
         secretQrReaderContainer.classList.add('d-none');
-        scanSecretButton.classList.remove('d-none'); // Show the button again
+        scanSecretButton.classList.remove('d-none');
         isSecretScannerActive = false;
     };
 
@@ -225,8 +247,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     scanSecretButton.addEventListener('click', startSecretScanner);
     closeSecretScannerButton.addEventListener('click', stopSecretScanner);
+    endTrailButton.addEventListener('click', endTrail);
     
-    // When the unlock modal is closed, stop the scanner
     document.getElementById('unlock-modal').addEventListener('hidden.bs.modal', stopUnlockScanner);
 
 
