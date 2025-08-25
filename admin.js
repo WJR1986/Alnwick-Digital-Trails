@@ -15,50 +15,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Core Functions ---
-    const loadTrails = async () => {
-        trailListContainer.innerHTML = `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
+const loadTrails = async () => {
+    trailListContainer.innerHTML = `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
 
-        const { data: trails, error } = await supabase
-            .from('trails')
-            .select('*')
-            .order('id', { ascending: true });
+    const { data: trails, error } = await supabase
+        .from('trails')
+        .select('*')
+        .order('id', { ascending: true });
 
-        if (error) {
-            console.error('Error fetching trails:', error);
-            trailListContainer.innerHTML = `<div class="alert alert-danger">Error fetching trails. Check the console for details.</div>`;
-            return;
-        }
+    // ADD THIS LINE TO DEBUG
+    console.log('Supabase response:', { trails, error });
 
-        trailListContainer.innerHTML = ''; // Clear spinner
+    if (error) {
+        console.error('Error fetching trails:', error);
+        trailListContainer.innerHTML = `<div class="alert alert-danger">Error fetching trails. Check the console for details.</div>`;
+        return;
+    }
 
-        if (trails.length === 0) {
-            trailListContainer.innerHTML = `<p>No trails found. You can add one now!</p>`;
-            return;
-        }
-        
-        const trailCards = trails.map(trail => `
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="card-title mb-1">${trail.name}</h5>
-                            <p class="card-subtitle text-muted">${trail.theme}</p>
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-secondary me-2" disabled>
-                                <i class="bi bi-pencil-fill"></i> Edit
-                            </button>
-                            <button class="btn btn-sm btn-primary" disabled>
-                                <i class="bi bi-geo-alt-fill"></i> Manage Locations
-                            </button>
-                        </div>
+    trailListContainer.innerHTML = ''; // Clear spinner
+
+    if (trails.length === 0) {
+        trailListContainer.innerHTML = `<div class="alert alert-info">No trails found. Click "Add New Trail" to get started.</div>`;
+        return;
+    }
+    
+    const trailCards = trails.map(trail => `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-1">${trail.name}</h5>
+                        <p class="card-subtitle text-muted">${trail.theme}</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-secondary me-2" disabled>
+                            <i class="bi bi-pencil-fill"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-primary" disabled>
+                            <i class="bi bi-geo-alt-fill"></i> Manage Locations
+                        </button>
                     </div>
                 </div>
             </div>
-        `).join('');
-        
-        trailListContainer.innerHTML = trailCards;
-    };
+        </div>
+    `).join('');
+    
+    trailListContainer.innerHTML = trailCards;
+};
 
 
     const showAdminView = () => {
