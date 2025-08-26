@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State ---
     let currentTrailId = null;
 
-    // --- Element Selectors ---
+    // --- Element Selectors (Organized and Corrected) ---
     const loginView = document.getElementById('login-view');
     const adminView = document.getElementById('admin-view');
     const locationsView = document.getElementById('locations-view');
@@ -13,14 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginError = document.getElementById('login-error');
     const logoutButton = document.getElementById('logout-button');
 
-    // Trail view elements
+    // Trail view & modal elements
     const trailListContainer = document.getElementById('trail-list-container');
     const addNewTrailButton = document.getElementById('add-new-trail-button');
     const addTrailModalEl = document.getElementById('add-trail-modal');
     const addTrailModal = new bootstrap.Modal(addTrailModalEl);
     const addTrailForm = document.getElementById('add-trail-form');
 
-    // Location view elements
+    // Location view & modal elements
     const backToTrailsButton = document.getElementById('back-to-trails-button');
     const locationsTrailTitle = document.getElementById('locations-trail-title');
     const locationListContainer = document.getElementById('location-list-container');
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const locationCards = locationLinks.map(link => {
-                const location = link.locations; // The actual location data is nested
+                const location = link.locations;
                 return `
                 <div class="card mb-3">
                     <div class="card-body">
@@ -173,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // --- Auth Functions ---
     const handleLogin = async (event) => {
         event.preventDefault();
         loginError.classList.add('d-none');
