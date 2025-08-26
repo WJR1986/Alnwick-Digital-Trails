@@ -8,60 +8,61 @@ document.addEventListener('DOMContentLoaded', () => {
     const trailListContainer = document.getElementById('trail-list-container');
 
     // --- Supabase Initialization ---
-    // IMPORTANT: Replace with your actual Supabase URL and Anon Key
+
     const SUPABASE_URL = 'https://smqqultilrhuzkybvlzs.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNtcXF1bHRpbHJodXpreWJ2bHpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUzNjcyNDUsImV4cCI6MjA3MDk0MzI0NX0.uuqMY1ZHEzZKwg1c99r5FQnipprCVUrRYfWSXfprKIs';
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // --- Core Functions ---
-const loadTrails = async () => {
-    trailListContainer.innerHTML = `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
+    const loadTrails = async () => {
+        trailListContainer.innerHTML = `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
 
-    const { data: trails, error } = await supabase
-        .from('trails')
-        .select('*')
-        .order('id', { ascending: true });
+        // **FIXED LINE:** We now use 'supabaseClient' to make the call
+        const { data: trails, error } = await supabaseClient
+            .from('trails')
+            .select('*')
+            .order('id', { ascending: true });
 
-    // ADD THIS LINE TO DEBUG
-    console.log('Supabase response:', { trails, error });
+        // This console log should now appear
+        console.log('Supabase response:', { trails, error });
 
-    if (error) {
-        console.error('Error fetching trails:', error);
-        trailListContainer.innerHTML = `<div class="alert alert-danger">Error fetching trails. Check the console for details.</div>`;
-        return;
-    }
+        if (error) {
+            console.error('Error fetching trails:', error);
+            trailListContainer.innerHTML = `<div class="alert alert-danger">Error fetching trails. Check the console for details.</div>`;
+            return;
+        }
 
-    trailListContainer.innerHTML = ''; // Clear spinner
+        trailListContainer.innerHTML = ''; // Clear spinner
 
-    if (trails.length === 0) {
-        trailListContainer.innerHTML = `<div class="alert alert-info">No trails found. Click "Add New Trail" to get started.</div>`;
-        return;
-    }
-    
-    const trailCards = trails.map(trail => `
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="card-title mb-1">${trail.name}</h5>
-                        <p class="card-subtitle text-muted">${trail.theme}</p>
-                    </div>
-                    <div>
-                        <button class="btn btn-sm btn-secondary me-2" disabled>
-                            <i class="bi bi-pencil-fill"></i> Edit
-                        </button>
-                        <button class="btn btn-sm btn-primary" disabled>
-                            <i class="bi bi-geo-alt-fill"></i> Manage Locations
-                        </button>
+        if (trails.length === 0) {
+            trailListContainer.innerHTML = `<div class="alert alert-info">No trails found. Click "Add New Trail" to get started.</div>`;
+            return;
+        }
+        
+        const trailCards = trails.map(trail => `
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title mb-1">${trail.name}</h5>
+                            <p class="card-subtitle text-muted">${trail.theme}</p>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-secondary me-2" disabled>
+                                <i class="bi bi-pencil-fill"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-primary" disabled>
+                                <i class="bi bi-geo-alt-fill"></i> Manage Locations
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    `).join('');
-    
-    trailListContainer.innerHTML = trailCards;
-};
+        `).join('');
+        
+        trailListContainer.innerHTML = trailCards;
+    };
 
 
     const showAdminView = () => {
