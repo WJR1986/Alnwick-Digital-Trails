@@ -151,8 +151,10 @@ document.addEventListener('DOMContentLoaded', () => {
         showLoginView();
     }
 
-    // --- Event Listeners ---
+ // --- Event Listeners ---
     loginForm.addEventListener('submit', handleLogin);
     logoutButton.addEventListener('click', handleLogout);
+    addNewTrailButton.addEventListener('click', () => addTrailModal.show());
+    addTrailForm.addEventListener('submit', handleAddTrail);
 
 }); // The closing bracket for the DOMContentLoaded listener
