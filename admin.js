@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                sessionStorage.setItem('admin-token', data.token);
+                localStorage.setItem('admin-token', data.token);
                 showAdminView();
             } else {
                 loginError.classList.remove('d-none');
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleLogout = () => {
-        sessionStorage.removeItem('admin-token');
+        localStorage.removeItem('admin-token');
         showLoginView();
     };
 
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     // --- Initial Check ---
-    if (sessionStorage.getItem('admin-token') === 'admin-access-granted') {
+    if (localStorage.getItem('admin-token') === 'admin-access-granted') {
         showAdminView();
     } else {
         showLoginView();
