@@ -1,4 +1,10 @@
+// admin.js
+// JavaScript for the admin interface of the hiking trails application
+
 document.addEventListener('DOMContentLoaded', () => {
+    // --- State ---
+    let currentTrailId = null;
+
     // --- Element Selectors ---
     const loginView = document.getElementById('login-view');
     const adminView = document.getElementById('admin-view');
@@ -15,13 +21,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToTrailsButton = document.getElementById('back-to-trails-button');
     const locationsTrailTitle = document.getElementById('locations-trail-title');
     const locationListContainer = document.getElementById('location-list-container');
+    const addNewLocationButton = document.getElementById('add-new-location-button');
+    const addLocationModalEl = document.getElementById('add-location-modal');
+    const addLocationModal = new bootstrap.Modal(addLocationModalEl);
+    const addLocationForm = document.getElementById('add-location-form');
 
     // --- Supabase Initialization ---
  const SUPABASE_URL = 'https://smqqultilrhuzkybvlzs.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNtcXF1bHRpbHJodXpreWJ2bHpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUzNjcyNDUsImV4cCI6MjA3MDk0MzI0NX0.uuqMY1ZHEzZKwg1c99r5FQnipprCVUrRYfWSXfprKIs';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // --- Location Management Functions ---
+  // --- Location Management Functions ---
+    const handleAddLocation = async (event) => {
+        event.preventDefault();
+        const locationData = {
+            name: document.getElementById('location-name').value,
+            category: document.getElementById('location-category').value,
+            description: document.getElementById('location-description').value,
+            latitude: parseFloat(document.getElementById('location-latitude').value),
+            longitude: parseFloat(document.getElementById('location-longitude').value),
+            qr_secret_story: document.getElementById('location-qr-story').value,
+            secret_code: document.getElementById('location-secret-code').value,
+        };
+
+        try {
+            const response = await fetch('/.netlify/functions/create-location', {
+                method: 'POST',
+                body: JSON.stringify({ locationData, trailId: currentTrailId })
+            });
+            if (!response.ok) {
+                const errorResult = await response.json();
+                throw new Error(errorResult.message || 'Failed to add location');
+            }
+            addLocationModal.hide();
+            addLocationForm.reset();
+            loadLocationsForTrail(currentTrailId);
+        } catch (error) {
+            console.error('Error submitting new location:', error);
+            alert(`Error: ${error.message}`);
+        }
+    };
+
     const loadLocationsForTrail = async (trailId) => {
         locationListContainer.innerHTML = `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
         try {
@@ -161,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- View Switching Functions ---
     const showLocationsView = (trailId, trailName) => {
+        currentTrailId = trailId;
         adminView.classList.add('d-none');
         locationsView.classList.remove('d-none');
         locationsTrailTitle.textContent = trailName;
@@ -202,4 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
     addTrailForm.addEventListener('submit', handleAddTrail);
     trailListContainer.addEventListener('click', handleTrailListClick);
     backToTrailsButton.addEventListener('click', showAdminView);
+    addNewLocationButton.addEventListener('click', () => addLocationModal.show());
+    addLocationForm.addEventListener('submit', handleAddLocation);
 });
