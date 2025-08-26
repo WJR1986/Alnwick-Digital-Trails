@@ -1,6 +1,3 @@
-// admin.js
-// JavaScript for the admin interface of the hiking trails application
-
 document.addEventListener('DOMContentLoaded', () => {
     // --- State ---
     let currentTrailId = null;
@@ -9,15 +6,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginView = document.getElementById('login-view');
     const adminView = document.getElementById('admin-view');
     const locationsView = document.getElementById('locations-view');
+
+    // Login elements
     const loginForm = document.getElementById('login-form');
     const passwordInput = document.getElementById('password-input');
     const loginError = document.getElementById('login-error');
     const logoutButton = document.getElementById('logout-button');
+
+    // Trail view elements
     const trailListContainer = document.getElementById('trail-list-container');
     const addNewTrailButton = document.getElementById('add-new-trail-button');
     const addTrailModalEl = document.getElementById('add-trail-modal');
     const addTrailModal = new bootstrap.Modal(addTrailModalEl);
     const addTrailForm = document.getElementById('add-trail-form');
+
+    // Location view elements
     const backToTrailsButton = document.getElementById('back-to-trails-button');
     const locationsTrailTitle = document.getElementById('locations-trail-title');
     const locationListContainer = document.getElementById('location-list-container');
@@ -27,11 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const addLocationForm = document.getElementById('add-location-form');
 
     // --- Supabase Initialization ---
- const SUPABASE_URL = 'https://smqqultilrhuzkybvlzs.supabase.co';
+    const SUPABASE_URL = 'https://smqqultilrhuzkybvlzs.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNtcXF1bHRpbHJodXpreWJ2bHpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUzNjcyNDUsImV4cCI6MjA3MDk0MzI0NX0.uuqMY1ZHEzZKwg1c99r5FQnipprCVUrRYfWSXfprKIs';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // --- Location Management Functions ---
+    // --- Location Management Functions ---
     const handleAddLocation = async (event) => {
         event.preventDefault();
         const locationData = {
