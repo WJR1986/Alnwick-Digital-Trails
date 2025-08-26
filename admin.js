@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginError = document.getElementById('login-error');
     const logoutButton = document.getElementById('logout-button');
     const trailListContainer = document.getElementById('trail-list-container');
+    const addNewTrailButton = document.getElementById('add-new-trail-button'); // New
+    const addTrailModalEl = document.getElementById('add-trail-modal'); // New
+    const addTrailModal = new bootstrap.Modal(addTrailModalEl); // New
+    const addTrailForm = document.getElementById('add-trail-form'); // New
 
     // --- Supabase Initialization ---
     console.log("Step 2: Initializing Supabase client.");
@@ -63,6 +67,40 @@ document.addEventListener('DOMContentLoaded', () => {
         
         trailListContainer.innerHTML = trailCards;
     };
+
+// --- NEW FUNCTION to handle adding a trail ---
+    const handleAddTrail = async (event) => {
+        event.preventDefault();
+        const trailData = {
+            name: document.getElementById('trail-name').value,
+            theme: document.getElementById('trail-theme').value,
+            description: document.getElementById('trail-description').value,
+            duration_text: document.getElementById('trail-duration').value,
+            distance_text: document.getElementById('trail-distance').value,
+        };
+
+        try {
+            const response = await fetch('/.netlify/functions/create-trail', {
+                method: 'POST',
+                body: JSON.stringify(trailData)
+            });
+
+            if (!response.ok) {
+                const errorResult = await response.json();
+                throw new Error(errorResult.message || 'Failed to add trail');
+            }
+
+            // Close the modal, reset the form, and refresh the list
+            addTrailModal.hide();
+            addTrailForm.reset();
+            loadTrails();
+
+        } catch (error) {
+            console.error('Error submitting new trail:', error);
+            alert(`Error: ${error.message}`);
+        }
+    };
+
 
     const showAdminView = () => {
         loginView.classList.add('d-none');
