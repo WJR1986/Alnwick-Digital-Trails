@@ -14,13 +14,56 @@ document.addEventListener('DOMContentLoaded', () => {
     const addTrailForm = document.getElementById('add-trail-form');
     const backToTrailsButton = document.getElementById('back-to-trails-button');
     const locationsTrailTitle = document.getElementById('locations-trail-title');
+    const locationListContainer = document.getElementById('location-list-container');
 
     // --- Supabase Initialization ---
-    const SUPABASE_URL = 'https://smqqultilrhuzkybvlzs.supabase.co';
+ const SUPABASE_URL = 'https://smqqultilrhuzkybvlzs.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNtcXF1bHRpbHJodXpreWJ2bHpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUzNjcyNDUsImV4cCI6MjA3MDk0MzI0NX0.uuqMY1ZHEzZKwg1c99r5FQnipprCVUrRYfWSXfprKIs';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // --- Core Functions ---
+    // --- Location Management Functions ---
+    const loadLocationsForTrail = async (trailId) => {
+        locationListContainer.innerHTML = `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
+        try {
+            const response = await fetch(`/.netlify/functions/get-locations?trailId=${trailId}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const locationLinks = await response.json();
+
+            if (locationLinks.length === 0) {
+                locationListContainer.innerHTML = `<div class="alert alert-info">No locations found for this trail.</div>`;
+                return;
+            }
+
+            const locationCards = locationLinks.map(link => {
+                const location = link.locations; // The actual location data is nested
+                return `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title mb-1"><span class="badge bg-secondary me-2">${link.stop_number}</span> ${location.name}</h5>
+                                <p class="card-subtitle text-muted">${location.category}</p>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-secondary me-2" disabled><i class="bi bi-pencil-fill"></i> Edit</button>
+                                <button class="btn btn-sm btn-danger" disabled><i class="bi bi-trash-fill"></i> Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+            locationListContainer.innerHTML = locationCards;
+
+        } catch (error) {
+            console.error('Error loading locations:', error);
+            locationListContainer.innerHTML = `<div class="alert alert-danger">Could not load locations.</div>`;
+        }
+    };
+
+    // --- Trail Management Functions ---
     const loadTrails = async () => {
         trailListContainer.innerHTML = `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
         const { data: trails, error } = await supabaseClient.from('trails').select('*').order('id', { ascending: true });
@@ -121,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         adminView.classList.add('d-none');
         locationsView.classList.remove('d-none');
         locationsTrailTitle.textContent = trailName;
-        // Future: loadLocationsForTrail(trailId);
+        loadLocationsForTrail(trailId);
     };
 
     const handleTrailListClick = (event) => {
