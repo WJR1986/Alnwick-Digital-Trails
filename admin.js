@@ -1,21 +1,19 @@
-// --- admin.js ---
-// This script manages the admin panel for the Alnwick Digital Trails application.
-
 document.addEventListener('DOMContentLoaded', () => {
     // --- Element Selectors ---
     const loginView = document.getElementById('login-view');
     const adminView = document.getElementById('admin-view');
-    const locationsView = document.getElementById('locations-view'); // New
+    const locationsView = document.getElementById('locations-view');
     const loginForm = document.getElementById('login-form');
-    // ... (other selectors)
+    const passwordInput = document.getElementById('password-input');
+    const loginError = document.getElementById('login-error');
     const logoutButton = document.getElementById('logout-button');
     const trailListContainer = document.getElementById('trail-list-container');
     const addNewTrailButton = document.getElementById('add-new-trail-button');
     const addTrailModalEl = document.getElementById('add-trail-modal');
     const addTrailModal = new bootstrap.Modal(addTrailModalEl);
     const addTrailForm = document.getElementById('add-trail-form');
-    const backToTrailsButton = document.getElementById('back-to-trails-button'); // New
-    const locationsTrailTitle = document.getElementById('locations-trail-title'); // New
+    const backToTrailsButton = document.getElementById('back-to-trails-button');
+    const locationsTrailTitle = document.getElementById('locations-trail-title');
 
     // --- Supabase Initialization ---
     const SUPABASE_URL = 'https://smqqultilrhuzkybvlzs.supabase.co';
@@ -25,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Core Functions ---
     const loadTrails = async () => {
         trailListContainer.innerHTML = `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
-
         const { data: trails, error } = await supabaseClient.from('trails').select('*').order('id', { ascending: true });
 
         if (error) {
@@ -64,15 +61,67 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleAddTrail = async (event) => {
-        // ... (this function is unchanged)
+        event.preventDefault();
+        const trailData = {
+            name: document.getElementById('trail-name').value,
+            theme: document.getElementById('trail-theme').value,
+            description: document.getElementById('trail-description').value,
+            duration_text: document.getElementById('trail-duration').value,
+            distance_text: document.getElementById('trail-distance').value,
+        };
+        try {
+            const response = await fetch('/.netlify/functions/create-trail', {
+                method: 'POST',
+                body: JSON.stringify(trailData)
+            });
+            if (!response.ok) {
+                const errorResult = await response.json();
+                throw new Error(errorResult.message || 'Failed to add trail');
+            }
+            addTrailModal.hide();
+            addTrailForm.reset();
+            loadTrails();
+        } catch (error) {
+            console.error('Error submitting new trail:', error);
+            alert(`Error: ${error.message}`);
+        }
     };
 
-    // --- NEW: View Switching for Locations Page ---
+    const handleLogin = async (event) => {
+        event.preventDefault();
+        loginError.classList.add('d-none');
+        const password = passwordInput.value;
+        try {
+            const response = await fetch('/.netlify/functions/admin-login', {
+                method: 'POST',
+                body: JSON.stringify({ password: password })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                sessionStorage.setItem('admin-token', data.token);
+                showAdminView();
+            } else {
+                loginError.classList.remove('d-none');
+                passwordInput.value = '';
+            }
+        } catch (error) {
+            console.error('Login failed:', error);
+            loginError.textContent = 'An error occurred. Please try again.';
+            loginError.classList.remove('d-none');
+        }
+    };
+
+    const handleLogout = () => {
+        sessionStorage.removeItem('admin-token');
+        showLoginView();
+    };
+
+    // --- View Switching Functions ---
     const showLocationsView = (trailId, trailName) => {
         adminView.classList.add('d-none');
         locationsView.classList.remove('d-none');
         locationsTrailTitle.textContent = trailName;
-        // In the future, we will call a function here to load the locations for trailId
+        // Future: loadLocationsForTrail(trailId);
     };
 
     const handleTrailListClick = (event) => {
@@ -84,9 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    // --- Existing View Switching ---
     const showAdminView = () => {
-        locationsView.classList.add('d-none'); // Hide locations view if visible
+        locationsView.classList.add('d-none');
         loginView.classList.add('d-none');
         adminView.classList.remove('d-none');
         loadTrails();
@@ -97,8 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loginView.classList.remove('d-none');
     };
     
-    // ... (handleLogin and handleLogout are unchanged)
-
     // --- Initial Check ---
     if (sessionStorage.getItem('admin-token') === 'admin-access-granted') {
         showAdminView();
@@ -111,6 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
     logoutButton.addEventListener('click', handleLogout);
     addNewTrailButton.addEventListener('click', () => addTrailModal.show());
     addTrailForm.addEventListener('submit', handleAddTrail);
-    trailListContainer.addEventListener('click', handleTrailListClick); // New
-    backToTrailsButton.addEventListener('click', showAdminView); // New
+    trailListContainer.addEventListener('click', handleTrailListClick);
+    backToTrailsButton.addEventListener('click', showAdminView);
 });
