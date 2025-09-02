@@ -1,7 +1,7 @@
 {
   "name": "Alnwick Digital Trails",
   "short_name": "Alnwick Trails",
-  "start_url": "index.html",
+"start_url": "trails.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#333333",

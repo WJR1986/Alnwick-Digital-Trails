@@ -3,141 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alnwick Digital Trails</title>
-<meta name="description" content="Discover the hidden secrets of Alnwick with interactive, self-guided digital walking trails.">
-
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://your-custom-domain.com/">
-<meta property="og:title" content="Alnwick Digital Trails">
-<meta property="og:description" content="Discover the hidden secrets of Alnwick with interactive, self-guided digital walking trails.">
-<meta property="og:image" content="https://your-custom-domain.com/social-image.png">
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <!-- Bootstrap CSS -->
+    <title>Alnwick Digital Trails - Self-Guided Walking Tours</title>
+    <meta name="description" content="Discover the hidden secrets of Alnwick with interactive, self-guided digital walking trails. Purchase a trail and start your adventure today!">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
-    
-    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="landing.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
-<body class="bg-light">
+<body>
 
-    <!-- Header -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#" onclick="location.reload()">
+            <a class="navbar-brand" href="#">
                 <i class="bi bi-compass-fill"></i>
                 Alnwick Digital Trails
             </a>
         </div>
     </nav>
 
-    <!-- Main Content Area -->
-    <main class="container mt-4">
-        <!-- View 1: Home Screen - List of Trails -->
-        <div id="home-view">
-            <div class="text-center mb-4">
-                <h1 class="display-6">Discover the Secrets of Alnwick</h1>
-                <p class="lead">Select a trail below to learn more, or unlock your purchased trail to begin your adventure.</p>
+    <header class="hero-section text-center text-white py-5">
+        <div class="container">
+            <h1 class="display-4">Your Adventure in Alnwick Awaits</h1>
+            <p class="lead">Explore the historic streets and hidden gems of Alnwick with our interactive, self-guided digital trails.</p>
+        </div>
+    </header>
+
+    <main class="container mt-5">
+        <section id="how-it-works" class="text-center mb-5">
+            <h2>How It Works</h2>
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="p-3">
+                        <i class="bi bi-phone-fill display-4 text-primary"></i>
+                        <h4 class="mt-3">1. Choose Your Trail</h4>
+                        <p class="text-muted">Select a trail below and complete your purchase securely.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3">
+                        <i class="bi bi-key-fill display-4 text-primary"></i>
+                        <h4 class="mt-3">2. Get Your Code</h4>
+                        <p class="text-muted">You'll instantly receive a unique code to unlock your trail.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3">
+                        <i class="bi bi-play-circle-fill display-4 text-primary"></i>
+                        <h4 class="mt-3">3. Start Exploring</h4>
+                        <p class="text-muted">Open our app, enter your code, and begin your adventure!</p>
+                    </div>
+                </div>
             </div>
-            <div id="trail-list" class="row g-4">
-                <!-- Trail cards will be dynamically inserted here -->
+            <a href="trails.html" class="btn btn-outline-secondary">Already have a code? Start here</a>
+        </section>
+
+        <hr class="my-5">
+
+        <section id="trails-for-purchase" class="mb-5">
+            <h2 class="text-center">Our Trails</h2>
+            <div id="trail-list" class="row g-4 mt-3">
                 <div class="text-center p-5">
                     <div class="spinner-border text-secondary" role="status">
                         <span class="visually-hidden">Loading trails...</span>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- View 2: Live Trail Map -->
-<div id="live-trail-view" class="d-none">
-            <div class="card shadow-lg">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 id="trail-title" class="mb-0">Trail Map</h5>
-<button class="btn btn-sm btn-outline-secondary" onclick="location.reload()">
-
-<button id="end-trail-button" class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-x-lg"></i> End Trail
-                    </button>
-                </div>
-                <div class="card-body p-0">
-                    <div id="map"></div>
-                    
-                    <button id="scan-secret-button" class="btn btn-warning btn-lg shadow d-none">
-                        <i class="bi bi-qr-code-scan"></i> Scan Secret
-                    </button>
-
-                    <div id="secret-qr-reader-container" class="d-none">
-                        <div id="secret-qr-reader" style="width: 100%;"></div>
-                        <button id="close-secret-scanner-button" class="btn btn-secondary mt-2 w-100">Close Scanner</button>
-                    </div>
-
-                </div>
-                 <div class="card-footer text-center">
-                    <p class="mb-0 small">Find a QR code at a location to unlock a hidden secret!</p>
-                </div>
-            </div>
-        </div>
+        </section>
     </main>
-    
-    <!-- Unlock Modal -->
-    <div class="modal fade" id="unlock-modal" tabindex="-1" aria-labelledby="unlockModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="unlockModalLabel">Unlock Your Trail</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Enter your unique code below or scan the QR code from your leaflet.</p>
-                    <div class="mb-3">
-                        <label for="trail-code-input" class="form-label">Unique Trail Code</label>
-                        <input type="text" class="form-control" id="trail-code-input" placeholder="e.g., ALNWICK-TRAIL-...">
-                    </div>
-                    <div class="d-grid gap-2">
-                         <button id="unlock-button" class="btn btn-primary">
-                            <i class="bi bi-key-fill"></i> Unlock Trail
-                        </button>
-                        <button id="scan-qr-button" class="btn btn-outline-secondary">
-                            <i class="bi bi-qr-code-scan"></i> Scan QR Code
-                        </button>
-                    </div>
-                    <div id="qr-reader-container" class="mt-3 d-none">
-                        <div id="qr-reader" style="width: 100%;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Secret Reveal Modal -->
-    <div class="modal fade" id="secret-modal" tabindex="-1" aria-labelledby="secretModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-warning">
-                    <h5 class="modal-title" id="secretModalLabel"><i class="bi bi-treasure-fill"></i> Secret Unlocked!</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <h4 id="secret-location-name" class="mb-3"></h4>
-                    <p id="secret-story-content"></p>
-                </div>
-            </div>
-        </div>
-    </div>
 
-
-    <!-- JavaScript Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <footer class="bg-dark text-white text-center py-3">
+        <p class="mb-0">&copy; 2025 Alnwick Digital Trails</p>
+    </footer>
     
-    <!-- Custom App Logic -->
-    <script src="app.js"></script>
+    <script src="landing.js"></script>
 </body>
 </html>
