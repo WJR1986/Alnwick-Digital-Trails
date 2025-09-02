@@ -22,10 +22,13 @@ exports.handler = async function(event, context) {
     };
   }
 
-  // Optional: Check if the code has already been used
-  if (accessData.is_activated) {
-    // You can decide if you want to allow re-use or not
-  }
+  // Check if the code has already been used
+if (accessData.is_activated) {
+    return {
+      statusCode: 403, // Forbidden
+      body: JSON.stringify({ success: false, message: 'This access code has already been used.' })
+    };
+}
 
   // 2. Get all locations for that trail, ordered by stop number
   const { data: locationsData, error: locationsError } = await supabase
