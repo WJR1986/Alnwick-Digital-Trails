@@ -41,11 +41,13 @@ const handleAddLocation = async (event) => {
         name: document.getElementById('location-name').value,
         category: document.getElementById('location-category').value,
         description: document.getElementById('location-description').value,
+        image_url: document.getElementById('location-image-url').value,         // Add this line
+        image_url_old: document.getElementById('location-image-url-old').value, // Add this line
         latitude: parseFloat(document.getElementById('location-latitude').value),
         longitude: parseFloat(document.getElementById('location-longitude').value),
         qr_secret_story: document.getElementById('location-qr-story').value,
         secret_code: document.getElementById('location-secret-code').value,
-        qr_bonus_story: document.getElementById('location-qr-bonus-story').value, // Add this line
+        qr_bonus_story: document.getElementById('location-qr-bonus-story').value,
         detailed_history: document.getElementById('location-detailed-history').value,
         voucher_text: document.getElementById('location-voucher-text').value,
     };
@@ -67,7 +69,6 @@ const handleAddLocation = async (event) => {
         alert(`Error: ${error.message}`);
     }
 };
-
     const loadLocationsForTrail = async (trailId) => {
         locationListContainer.innerHTML = `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
         try {
