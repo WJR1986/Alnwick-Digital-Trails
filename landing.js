@@ -6,10 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
         trails.forEach(trail => {
             const card = document.createElement('div');
             card.className = 'col-lg-4 col-md-6';
-            card.innerHTML = `
-                <div class="card h-100 shadow-sm trail-card">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">${trail.name}</h5>
+card.innerHTML = `
+    <div class="card h-100 shadow-sm trail-card">
+        <img src="${trail.image_url}" class="card-img-top" alt="${trail.name}">
+        
+        <div class="card-body d-flex flex-column">
+            <h5 class="card-title">${trail.name}</h5>
                         <p class="card-text text-muted small">${trail.theme}</p>
                         <p class="card-text flex-grow-1">${trail.description}</p>
                         <div class="d-flex justify-content-between align-items-center mt-3">
