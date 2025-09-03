@@ -156,17 +156,26 @@ const revealSecret = (secretCode) => {
     if (location) {
         document.getElementById('secret-location-name').textContent = `${location.name} - Bonus Content`;
 
-        // --- NEW: Look for the bonus story ---
+        // --- Handle "Then & Now" Images ---
+        const thenNowContainer = document.getElementById('then-now-container');
+        if (location.image_url && location.image_url_old) {
+            document.getElementById('then-now-img-now').src = location.image_url;
+            document.getElementById('then-now-img-then').src = location.image_url_old;
+            thenNowContainer.classList.remove('d-none');
+        } else {
+            thenNowContainer.classList.add('d-none');
+        }
+
+        // --- Handle Bonus Story ---
         const bonusStoryContent = document.getElementById('secret-story-content');
         if (location.qr_bonus_story) {
             bonusStoryContent.textContent = location.qr_bonus_story;
             bonusStoryContent.parentElement.classList.remove('d-none');
         } else {
-            // Hide the main text area if there is no bonus story
             bonusStoryContent.parentElement.classList.add('d-none');
         }
 
-        // --- Handle Voucher (this stays the same) ---
+        // --- Handle Voucher ---
         const voucherContainer = document.getElementById('voucher-container');
         if (location.voucher_text) {
             document.getElementById('voucher-content').textContent = location.voucher_text;
@@ -175,7 +184,7 @@ const revealSecret = (secretCode) => {
             voucherContainer.classList.add('d-none');
         }
 
-        // We are removing the detailed history from this modal as it's now on the map
+        // --- Hide Detailed History (it's now on the map popup) ---
         const historyContainer = document.getElementById('history-container');
         historyContainer.classList.add('d-none');
         
@@ -184,6 +193,7 @@ const revealSecret = (secretCode) => {
         alert('Secret not found for your current trail.');
     }
 };
+
     // --- MAP LOGIC ---
 const initializeMap = (data) => {
     if (map) {
