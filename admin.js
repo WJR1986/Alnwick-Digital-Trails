@@ -45,8 +45,9 @@ const handleAddLocation = async (event) => {
         longitude: parseFloat(document.getElementById('location-longitude').value),
         qr_secret_story: document.getElementById('location-qr-story').value,
         secret_code: document.getElementById('location-secret-code').value,
-        detailed_history: document.getElementById('location-detailed-history').value, // Add this line
-        voucher_text: document.getElementById('location-voucher-text').value,         // Add this line
+        qr_bonus_story: document.getElementById('location-qr-bonus-story').value, // Add this line
+        detailed_history: document.getElementById('location-detailed-history').value,
+        voucher_text: document.getElementById('location-voucher-text').value,
     };
 
     try {

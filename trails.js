@@ -154,11 +154,19 @@ const revealSecret = (secretCode) => {
     const location = currentTrailData.locations.find(loc => loc.secret_code === secretCode);
 
     if (location) {
-        // --- Populate main content ---
-        document.getElementById('secret-location-name').textContent = location.name;
-        document.getElementById('secret-story-content').textContent = location.qr_secret_story;
+        document.getElementById('secret-location-name').textContent = `${location.name} - Bonus Content`;
 
-        // --- Handle Voucher ---
+        // --- NEW: Look for the bonus story ---
+        const bonusStoryContent = document.getElementById('secret-story-content');
+        if (location.qr_bonus_story) {
+            bonusStoryContent.textContent = location.qr_bonus_story;
+            bonusStoryContent.parentElement.classList.remove('d-none');
+        } else {
+            // Hide the main text area if there is no bonus story
+            bonusStoryContent.parentElement.classList.add('d-none');
+        }
+
+        // --- Handle Voucher (this stays the same) ---
         const voucherContainer = document.getElementById('voucher-container');
         if (location.voucher_text) {
             document.getElementById('voucher-content').textContent = location.voucher_text;
@@ -167,45 +175,49 @@ const revealSecret = (secretCode) => {
             voucherContainer.classList.add('d-none');
         }
 
-        // --- Handle Detailed History ---
+        // We are removing the detailed history from this modal as it's now on the map
         const historyContainer = document.getElementById('history-container');
-        const collapseElement = document.getElementById('collapseHistory');
-        const bsCollapse = new bootstrap.Collapse(collapseElement, { toggle: false });
-
-        if (location.detailed_history) {
-            document.getElementById('history-content').textContent = location.detailed_history;
-            historyContainer.classList.remove('d-none');
-            bsCollapse.hide(); // Ensure it starts collapsed
-        } else {
-            historyContainer.classList.add('d-none');
-        }
-
+        historyContainer.classList.add('d-none');
+        
         secretModal.show();
     } else {
         alert('Secret not found for your current trail.');
     }
 };
-
     // --- MAP LOGIC ---
-    const initializeMap = (data) => {
-        if (map) {
-            map.remove();
+const initializeMap = (data) => {
+    if (map) {
+        map.remove();
+    }
+    const startLocation = data.locations[0];
+    map = L.map('map').setView([startLocation.latitude, startLocation.longitude], 16);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    data.locations.forEach((location, index) => {
+        const stopNumber = index + 1;
+        const marker = L.marker([location.latitude, location.longitude]).addTo(map);
+        
+        // --- NEW: Build a richer popup with the essential information ---
+        let popupContent = `
+            <div class="p-1">
+                <h5>${stopNumber}. ${location.name}</h5>
+                <p><strong>${location.qr_secret_story}</strong></p>
+                <p class="mb-0 small">${location.description}</p>
+        `;
+
+        if (location.detailed_history) {
+            popupContent += `<hr><p class="mb-0 small"><em>${location.detailed_history}</em></p>`;
         }
-        const startLocation = data.locations[0];
-        map = L.map('map').setView([startLocation.latitude, startLocation.longitude], 16);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        data.locations.forEach((location, index) => {
-            const stopNumber = index + 1;
-            const marker = L.marker([location.latitude, location.longitude]).addTo(map);
-            const popupContent = `<b>${stopNumber}. ${location.name}</b><br>${location.description}`;
-            marker.bindPopup(popupContent);
-        });
-    };
+        
+        popupContent += `</div>`;
+        
+        marker.bindPopup(popupContent);
+    });
+};
     
     // --- QR SCANNER LOGIC ---
     const startUnlockScanner = () => {
