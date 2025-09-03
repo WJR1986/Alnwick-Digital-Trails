@@ -42,3 +42,8 @@ body {
     padding: 15px;
     z-index: 1001; /* Sits on top of the scan button and map */
 }
+
+.trail-card .card-img-top {
+    aspect-ratio: 16 / 9;
+    object-fit: cover; /* This prevents the image from being stretched */
+}
