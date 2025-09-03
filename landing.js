@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.className = 'col-lg-4 col-md-6';
 card.innerHTML = `
     <div class="card h-100 shadow-sm trail-card">
-        <img src="${trail.image_url}" class="card-img-top" alt="${trail.name}">
+<img src="${trail.image_url || 'https://via.placeholder.com/400x225.png?text=Alnwick+Trail'}" class="card-img-top" alt="${trail.name}">
         
         <div class="card-body d-flex flex-column">
             <h5 class="card-title">${trail.name}</h5>

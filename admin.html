@@ -103,34 +103,39 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="add-trail-form">
-                        <div class="mb-3">
-                            <label for="trail-name" class="form-label">Trail Name</label>
-                            <input type="text" class="form-control" id="trail-name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="trail-theme" class="form-label">Theme</label>
-                            <input type="text" class="form-control" id="trail-theme" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="trail-description" class="form-label">Description</label>
-                            <textarea class="form-control" id="trail-description" rows="3" required></textarea>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="trail-duration" class="form-label">Duration Text</label>
-                                <input type="text" class="form-control" id="trail-duration" placeholder="e.g., 2 hours" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="trail-distance" class="form-label">Distance Text</label>
-                                <input type="text" class="form-control" id="trail-distance" placeholder="e.g., ~1 mile / 1.6 km" required>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save Trail</button>
-                        </div>
-                    </form>
+<form id="add-trail-form">
+    <div class="mb-3">
+        <label for="trail-name" class="form-label">Trail Name</label>
+        <input type="text" class="form-control" id="trail-name" required>
+    </div>
+    <div class="mb-3">
+        <label for="trail-theme" class="form-label">Theme</label>
+        <input type="text" class="form-control" id="trail-theme" required>
+    </div>
+    <div class="mb-3">
+        <label for="trail-description" class="form-label">Description</label>
+        <textarea class="form-control" id="trail-description" rows="3" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="trail-image-url" class="form-label">Image URL</label>
+        <input type="url" class="form-control" id="trail-image-url" placeholder="https://.../image.png" required>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="trail-duration" class="form-label">Duration Text</label>
+            <input type="text" class="form-control" id="trail-duration" placeholder="e.g., 2 hours" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="trail-distance" class="form-label">Distance Text</label>
+            <input type="text" class="form-control" id="trail-distance" placeholder="e.g., ~1 mile / 1.6 km" required>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save Trail</button>
+    </div>
+</form>
                 </div>
             </div>
         </div>

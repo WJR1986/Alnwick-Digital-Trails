@@ -146,32 +146,33 @@ document.addEventListener('DOMContentLoaded', () => {
         trailListContainer.innerHTML = trailCards;
     };
 
-    const handleAddTrail = async (event) => {
-        event.preventDefault();
-        const trailData = {
-            name: document.getElementById('trail-name').value,
-            theme: document.getElementById('trail-theme').value,
-            description: document.getElementById('trail-description').value,
-            duration_text: document.getElementById('trail-duration').value,
-            distance_text: document.getElementById('trail-distance').value,
-        };
-        try {
-            const response = await fetch('/.netlify/functions/create-trail', {
-                method: 'POST',
-                body: JSON.stringify(trailData)
-            });
-            if (!response.ok) {
-                const errorResult = await response.json();
-                throw new Error(errorResult.message || 'Failed to add trail');
-            }
-            addTrailModal.hide();
-            addTrailForm.reset();
-            loadTrails();
-        } catch (error) {
-            console.error('Error submitting new trail:', error);
-            alert(`Error: ${error.message}`);
-        }
+const handleAddTrail = async (event) => {
+    event.preventDefault();
+    const trailData = {
+        name: document.getElementById('trail-name').value,
+        theme: document.getElementById('trail-theme').value,
+        description: document.getElementById('trail-description').value,
+        image_url: document.getElementById('trail-image-url').value, // Add this line
+        duration_text: document.getElementById('trail-duration').value,
+        distance_text: document.getElementById('trail-distance').value,
     };
+    try {
+        const response = await fetch('/.netlify/functions/create-trail', {
+            method: 'POST',
+            body: JSON.stringify(trailData)
+        });
+        if (!response.ok) {
+            const errorResult = await response.json();
+            throw new Error(errorResult.message || 'Failed to add trail');
+        }
+        addTrailModal.hide();
+        addTrailForm.reset();
+        loadTrails();
+    } catch (error) {
+        console.error('Error submitting new trail:', error);
+        alert(`Error: ${error.message}`);
+    }
+};
 
     // --- Auth Functions ---
     const handleLogin = async (event) => {
