@@ -149,44 +149,53 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="add-location-form">
-                        <div class="mb-3">
-                            <label for="location-name" class="form-label">Location Name</label>
-                            <input type="text" class="form-control" id="location-name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="location-category" class="form-label">Category</label>
-                            <input type="text" class="form-control" id="location-category" placeholder="e.g., Hidden Gem, Historic Site" required>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="location-latitude" class="form-label">Latitude</label>
-                                <input type="number" step="any" class="form-control" id="location-latitude" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="location-longitude" class="form-label">Longitude</label>
-                                <input type="number" step="any" class="form-control" id="location-longitude" required>
-                            </div>
-                        </div>
-                         <div class="mb-3">
-                            <label for="location-description" class="form-label">Public Description</label>
-                            <textarea class="form-control" id="location-description" rows="3" required></textarea>
-                        </div>
-                        <hr>
-                        <h6 class="text-muted">QR Code Secret</h6>
-                        <div class="mb-3">
-                            <label for="location-secret-code" class="form-label">Secret Code</label>
-                            <input type="text" class="form-control" id="location-secret-code" placeholder="e.g., secret-market-cross" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="location-qr-story" class="form-label">Secret Story (Revealed on Scan)</label>
-                            <textarea class="form-control" id="location-qr-story" rows="3" required></textarea>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save Location</button>
-                        </div>
-                    </form>
+<form id="add-location-form">
+    <div class="mb-3">
+        <label for="location-name" class="form-label">Location Name</label>
+        <input type="text" class="form-control" id="location-name" required>
+    </div>
+    <div class="mb-3">
+        <label for="location-category" class="form-label">Category</label>
+        <input type="text" class="form-control" id="location-category" placeholder="e.g., Hidden Gem, Historic Site" required>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="location-latitude" class="form-label">Latitude</label>
+            <input type="number" step="any" class="form-control" id="location-latitude" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="location-longitude" class="form-label">Longitude</label>
+            <input type="number" step="any" class="form-control" id="location-longitude" required>
+        </div>
+    </div>
+     <div class="mb-3">
+        <label for="location-description" class="form-label">Public Description</label>
+        <textarea class="form-control" id="location-description" rows="3" required></textarea>
+    </div>
+    <hr>
+    <h6 class="text-muted">QR Code Secret</h6>
+    <div class="mb-3">
+        <label for="location-secret-code" class="form-label">Secret Code</label>
+        <input type="text" class="form-control" id="location-secret-code" placeholder="e.g., secret-market-cross" required>
+    </div>
+    <div class="mb-3">
+        <label for="location-qr-story" class="form-label">Secret Story (Revealed on Scan)</label>
+        <textarea class="form-control" id="location-qr-story" rows="3" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="location-detailed-history" class="form-label">Detailed History (Optional)</label>
+        <textarea class="form-control" id="location-detailed-history" rows="4"></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="location-voucher-text" class="form-label">Voucher / Special Offer (Optional)</label>
+        <textarea class="form-control" id="location-voucher-text" rows="2" placeholder="e.g., Show this for 10% off at..."></textarea>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save Location</button>
+    </div>
+</form>
                 </div>
             </div>
         </div>

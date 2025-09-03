@@ -35,35 +35,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // --- Location Management Functions ---
-    const handleAddLocation = async (event) => {
-        event.preventDefault();
-        const locationData = {
-            name: document.getElementById('location-name').value,
-            category: document.getElementById('location-category').value,
-            description: document.getElementById('location-description').value,
-            latitude: parseFloat(document.getElementById('location-latitude').value),
-            longitude: parseFloat(document.getElementById('location-longitude').value),
-            qr_secret_story: document.getElementById('location-qr-story').value,
-            secret_code: document.getElementById('location-secret-code').value,
-        };
-
-        try {
-            const response = await fetch('/.netlify/functions/create-location', {
-                method: 'POST',
-                body: JSON.stringify({ locationData, trailId: currentTrailId })
-            });
-            if (!response.ok) {
-                const errorResult = await response.json();
-                throw new Error(errorResult.message || 'Failed to add location');
-            }
-            addLocationModal.hide();
-            addLocationForm.reset();
-            loadLocationsForTrail(currentTrailId);
-        } catch (error) {
-            console.error('Error submitting new location:', error);
-            alert(`Error: ${error.message}`);
-        }
+const handleAddLocation = async (event) => {
+    event.preventDefault();
+    const locationData = {
+        name: document.getElementById('location-name').value,
+        category: document.getElementById('location-category').value,
+        description: document.getElementById('location-description').value,
+        latitude: parseFloat(document.getElementById('location-latitude').value),
+        longitude: parseFloat(document.getElementById('location-longitude').value),
+        qr_secret_story: document.getElementById('location-qr-story').value,
+        secret_code: document.getElementById('location-secret-code').value,
+        detailed_history: document.getElementById('location-detailed-history').value, // Add this line
+        voucher_text: document.getElementById('location-voucher-text').value,         // Add this line
     };
+
+    try {
+        const response = await fetch('/.netlify/functions/create-location', {
+            method: 'POST',
+            body: JSON.stringify({ locationData, trailId: currentTrailId })
+        });
+        if (!response.ok) {
+            const errorResult = await response.json();
+            throw new Error(errorResult.message || 'Failed to add location');
+        }
+        addLocationModal.hide();
+        addLocationForm.reset();
+        loadLocationsForTrail(currentTrailId);
+    } catch (error) {
+        console.error('Error submitting new location:', error);
+        alert(`Error: ${error.message}`);
+    }
+};
 
     const loadLocationsForTrail = async (trailId) => {
         locationListContainer.innerHTML = `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;

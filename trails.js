@@ -148,17 +148,43 @@ card.innerHTML = `
         }
     };
     
-    const revealSecret = (secretCode) => {
-        if (!currentTrailData) return;
-        const location = currentTrailData.locations.find(loc => loc.secret_code === secretCode);
-        if (location && location.qr_secret_story) {
-            document.getElementById('secret-location-name').textContent = location.name;
-            document.getElementById('secret-story-content').textContent = location.qr_secret_story;
-            secretModal.show();
+const revealSecret = (secretCode) => {
+    if (!currentTrailData) return;
+
+    const location = currentTrailData.locations.find(loc => loc.secret_code === secretCode);
+
+    if (location) {
+        // --- Populate main content ---
+        document.getElementById('secret-location-name').textContent = location.name;
+        document.getElementById('secret-story-content').textContent = location.qr_secret_story;
+
+        // --- Handle Voucher ---
+        const voucherContainer = document.getElementById('voucher-container');
+        if (location.voucher_text) {
+            document.getElementById('voucher-content').textContent = location.voucher_text;
+            voucherContainer.classList.remove('d-none');
         } else {
-            alert('Secret not found for your current trail.');
+            voucherContainer.classList.add('d-none');
         }
-    };
+
+        // --- Handle Detailed History ---
+        const historyContainer = document.getElementById('history-container');
+        const collapseElement = document.getElementById('collapseHistory');
+        const bsCollapse = new bootstrap.Collapse(collapseElement, { toggle: false });
+
+        if (location.detailed_history) {
+            document.getElementById('history-content').textContent = location.detailed_history;
+            historyContainer.classList.remove('d-none');
+            bsCollapse.hide(); // Ensure it starts collapsed
+        } else {
+            historyContainer.classList.add('d-none');
+        }
+
+        secretModal.show();
+    } else {
+        alert('Secret not found for your current trail.');
+    }
+};
 
     // --- MAP LOGIC ---
     const initializeMap = (data) => {

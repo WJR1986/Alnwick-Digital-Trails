@@ -123,10 +123,29 @@
                     <h5 class="modal-title" id="secretModalLabel"><i class="bi bi-treasure-fill"></i> Secret Unlocked!</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <h4 id="secret-location-name" class="mb-3"></h4>
-                    <p id="secret-story-content"></p>
-                </div>
+<div class="modal-body">
+    <h4 id="secret-location-name" class="mb-3"></h4>
+    <p id="secret-story-content"></p>
+    
+    <div id="voucher-container" class="d-none mt-4">
+        <div class="alert alert-success">
+            <h5 class="alert-heading"><i class="bi bi-gift-fill"></i> Special Offer!</h5>
+            <p id="voucher-content" class="mb-0"></p>
+        </div>
+    </div>
+    <div id="history-container" class="d-none mt-3">
+        <p>
+            <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" href="#collapseHistory" role="button" aria-expanded="false" aria-controls="collapseHistory">
+                Read More History...
+            </a>
+        </p>
+        <div class="collapse" id="collapseHistory">
+            <div class="card card-body">
+                <p id="history-content" class="mb-0 small"></p>
+            </div>
+        </div>
+    </div>
+    </div>
             </div>
         </div>
     </div>
