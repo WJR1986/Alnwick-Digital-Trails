@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- State ---
     let currentTrailId = null;
+    let locationPickerMap = null;
+    let locationMarker = null;
 
     // --- Element Selectors (Organized and Corrected) ---
     const loginView = document.getElementById('login-view');
@@ -34,41 +36,77 @@ document.addEventListener('DOMContentLoaded', () => {
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNtcXF1bHRpbHJodXpreWJ2bHpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUzNjcyNDUsImV4cCI6MjA3MDk0MzI0NX0.uuqMY1ZHEzZKwg1c99r5FQnipprCVUrRYfWSXfprKIs';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // --- Location Management Functions ---
-const handleAddLocation = async (event) => {
-    event.preventDefault();
-    const locationData = {
-        name: document.getElementById('location-name').value,
-        category: document.getElementById('location-category').value,
-        description: document.getElementById('location-description').value,
-        image_url: document.getElementById('location-image-url').value,         // Add this line
-        image_url_old: document.getElementById('location-image-url-old').value, // Add this line
-        latitude: parseFloat(document.getElementById('location-latitude').value),
-        longitude: parseFloat(document.getElementById('location-longitude').value),
-        qr_secret_story: document.getElementById('location-qr-story').value,
-        secret_code: document.getElementById('location-secret-code').value,
-        qr_bonus_story: document.getElementById('location-qr-bonus-story').value,
-        detailed_history: document.getElementById('location-detailed-history').value,
-        voucher_text: document.getElementById('location-voucher-text').value,
+    // --- Location Picker Map Function ---
+    const initializeLocationPickerMap = () => {
+        const latInput = document.getElementById('location-latitude');
+        const lngInput = document.getElementById('location-longitude');
+
+        // If map is already initialized, just reset its view and clear inputs
+        if (locationPickerMap) {
+            locationPickerMap.setView([55.4138, -1.7042], 15);
+            locationMarker.setLatLng([55.4138, -1.7042]);
+            latInput.value = '';
+            lngInput.value = '';
+            return;
+        }
+        
+        const initialCoords = [55.4138, -1.7042]; // Center of Alnwick
+        locationPickerMap = L.map('location-picker-map').setView(initialCoords, 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(locationPickerMap);
+
+        locationMarker = L.marker(initialCoords, { draggable: true }).addTo(locationPickerMap);
+        
+        const updateInputs = (latlng) => {
+            latInput.value = latlng.lat.toFixed(6);
+            lngInput.value = latlng.lng.toFixed(6);
+        };
+
+        locationMarker.on('dragend', (event) => updateInputs(event.target.getLatLng()));
+        locationPickerMap.on('click', (event) => {
+            locationMarker.setLatLng(event.latlng);
+            updateInputs(event.latlng);
+        });
     };
 
-    try {
-        const response = await fetch('/.netlify/functions/create-location', {
-            method: 'POST',
-            body: JSON.stringify({ locationData, trailId: currentTrailId })
-        });
-        if (!response.ok) {
-            const errorResult = await response.json();
-            throw new Error(errorResult.message || 'Failed to add location');
+    // --- Location Management Functions ---
+    const handleAddLocation = async (event) => {
+        event.preventDefault();
+        const locationData = {
+            name: document.getElementById('location-name').value,
+            category: document.getElementById('location-category').value,
+            description: document.getElementById('location-description').value,
+            image_url: document.getElementById('location-image-url').value,
+            image_url_old: document.getElementById('location-image-url-old').value,
+            latitude: parseFloat(document.getElementById('location-latitude').value),
+            longitude: parseFloat(document.getElementById('location-longitude').value),
+            qr_secret_story: document.getElementById('location-qr-story').value,
+            secret_code: document.getElementById('location-secret-code').value,
+            qr_bonus_story: document.getElementById('location-qr-bonus-story').value,
+            detailed_history: document.getElementById('location-detailed-history').value,
+            voucher_text: document.getElementById('location-voucher-text').value,
+        };
+
+        try {
+            const response = await fetch('/.netlify/functions/create-location', {
+                method: 'POST',
+                body: JSON.stringify({ locationData, trailId: currentTrailId })
+            });
+            if (!response.ok) {
+                const errorResult = await response.json();
+                throw new Error(errorResult.message || 'Failed to add location');
+            }
+            addLocationModal.hide();
+            addLocationForm.reset();
+            loadLocationsForTrail(currentTrailId);
+        } catch (error) {
+            console.error('Error submitting new location:', error);
+            alert(`Error: ${error.message}`);
         }
-        addLocationModal.hide();
-        addLocationForm.reset();
-        loadLocationsForTrail(currentTrailId);
-    } catch (error) {
-        console.error('Error submitting new location:', error);
-        alert(`Error: ${error.message}`);
-    }
-};
+    };
+
     const loadLocationsForTrail = async (trailId) => {
         locationListContainer.innerHTML = `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
         try {
@@ -150,33 +188,33 @@ const handleAddLocation = async (event) => {
         trailListContainer.innerHTML = trailCards;
     };
 
-const handleAddTrail = async (event) => {
-    event.preventDefault();
-    const trailData = {
-        name: document.getElementById('trail-name').value,
-        theme: document.getElementById('trail-theme').value,
-        description: document.getElementById('trail-description').value,
-        image_url: document.getElementById('trail-image-url').value, // Add this line
-        duration_text: document.getElementById('trail-duration').value,
-        distance_text: document.getElementById('trail-distance').value,
-    };
-    try {
-        const response = await fetch('/.netlify/functions/create-trail', {
-            method: 'POST',
-            body: JSON.stringify(trailData)
-        });
-        if (!response.ok) {
-            const errorResult = await response.json();
-            throw new Error(errorResult.message || 'Failed to add trail');
+    const handleAddTrail = async (event) => {
+        event.preventDefault();
+        const trailData = {
+            name: document.getElementById('trail-name').value,
+            theme: document.getElementById('trail-theme').value,
+            description: document.getElementById('trail-description').value,
+            image_url: document.getElementById('trail-image-url').value,
+            duration_text: document.getElementById('trail-duration').value,
+            distance_text: document.getElementById('trail-distance').value,
+        };
+        try {
+            const response = await fetch('/.netlify/functions/create-trail', {
+                method: 'POST',
+                body: JSON.stringify(trailData)
+            });
+            if (!response.ok) {
+                const errorResult = await response.json();
+                throw new Error(errorResult.message || 'Failed to add trail');
+            }
+            addTrailModal.hide();
+            addTrailForm.reset();
+            loadTrails();
+        } catch (error) {
+            console.error('Error submitting new trail:', error);
+            alert(`Error: ${error.message}`);
         }
-        addTrailModal.hide();
-        addTrailForm.reset();
-        loadTrails();
-    } catch (error) {
-        console.error('Error submitting new trail:', error);
-        alert(`Error: ${error.message}`);
-    }
-};
+    };
 
     // --- Auth Functions ---
     const handleLogin = async (event) => {
@@ -254,4 +292,7 @@ const handleAddTrail = async (event) => {
     backToTrailsButton.addEventListener('click', showAdminView);
     addNewLocationButton.addEventListener('click', () => addLocationModal.show());
     addLocationForm.addEventListener('submit', handleAddLocation);
+    
+    // Initialize map only when the location modal is shown
+    addLocationModalEl.addEventListener('shown.bs.modal', initializeLocationPickerMap);
 });
